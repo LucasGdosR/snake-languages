@@ -1,0 +1,4 @@
+; A program with a well-formed, type-checking, or runtime error related to heap-allocated values.
+
+; Index out out bounds
+(let ((arr (array 1))) (index arr 1) arr)

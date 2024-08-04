@@ -1,0 +1,68 @@
+; A program that illustrates how your language enables the creation of binary search trees, and implements
+; functions to add an element and check if an element is in the tree. Include several tests that print example output from
+; calling these functions.
+
+(type Node Array)
+(def make_node (val : Num) : Node
+    (let ((node (array 3)))
+        (set node 0 val)
+        (set node 1 (null Node))
+        (set node 2 (null Node))
+        node))
+
+(def val (node : Node) : Num
+    (index node 0))
+(def left (node : Node) : Node
+    (index node 1))
+(def right (node : Node) : Node
+    (index node 2))
+
+(def add_private (tree : Node node : Node) : Node
+    (let ((ignore 0))
+        (if (< (val node) (val tree))
+            (if (isNull (left tree))
+                (set tree 1 node)
+                (add_private (left tree) node))
+            (if (isNull (right tree))
+                (set tree 2 node)
+                (add_private(right tree) node))
+        )
+    )
+)
+
+(def add (tree : Node e : Num) : Node
+    (let ((node (make_node e)))
+        (if (isNull tree)
+            node
+            (add_private tree node)
+        )
+    )
+    tree
+)
+
+(def has (tree : Node e : Num) : Bool
+    (if (isNull tree)
+        false
+        (let ((v (val tree)))
+            (if (== e v)
+                true
+                (if (< e v)
+                    (has (left tree) e)
+                    (has (right tree) e)
+                )
+            )
+        )
+    )
+)
+
+(let ((tree (make_node 0)))
+    (print tree)
+    (print (has tree 2))
+    (print (add tree 2))
+    (print (has tree 2))
+    (print (add tree 1))
+    (print (add tree -2))
+    (print (add tree -1))
+    (print (add tree -3))
+    (add tree 3)
+)

@@ -1,0 +1,4 @@
+; A second program with a different well-formed, type-checking, or runtime error related to heap-allocated values.
+
+; Negative length array
+(array -1)

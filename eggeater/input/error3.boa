@@ -1,0 +1,5 @@
+; A third program with a different well-formed, type-checking, or runtime error related to heap-allocated values.
+
+; Runtime: trying to access an index of something that's not an array.
+
+(index 0 0)

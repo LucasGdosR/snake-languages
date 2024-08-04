@@ -1,0 +1,29 @@
+; A program with a function that takes an x and a y coordinate and produces a structure with those values,
+; and a function that takes two points and returns a new point with their x and y coordinates added together,
+; along with several tests that print example output from calling these functions.
+
+(type Point Array)
+
+(def make_point (x : Num y : Num) : Point
+    (let ((arr (array 2)))
+        (set arr 0 x)
+        (set arr 1 y)
+        arr
+    )
+)
+
+(def add_vectors (v1 : Point v2 : Point) : Point
+    (let ((sum (array 2)))
+        (set sum 0 (+ (index v1 0) (index v2 0)))
+        (set sum 1 (+ (index v1 1) (index v2 1)))
+        sum
+    )
+)
+
+(let ((p1 (make_point 1 5)) (p2 (make_point 2 3)) (p3 (make_point -3 10)))
+    (print (add_vectors p1 p2))
+    (print (add_vectors p1 p3))
+    (print (add_vectors p2 p3))
+    (print (add_vectors p3 p1))
+    (add_vectors p3 p2)
+)

@@ -1,0 +1,6 @@
+(let ((a1 (array 1)) (a2 (array 1)) (a3 (array 1)))
+; I'm getting segmentation faults when calling print with an even number of arguments on the stack
+; It's probably misaligned to 16 bytes
+; TODO
+    (print 1)
+)

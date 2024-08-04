@@ -1,0 +1,3 @@
+; A program with a number of simple examples of constructing and accessing heap-allocated data in your language.
+
+(let ((arr (array 3))) (set arr 0 1) (set arr 1 -1) (set arr 2 5) (print (index arr 2)) arr)

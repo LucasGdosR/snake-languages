@@ -1,0 +1,61 @@
+; A program that illustrates how your language enables the creation of linked lists, and four functions:
+
+(type Node Array)
+(def make_node_with_val (val : Num) : Node
+    (let ((node (array 2)))
+        (set node 0 val)
+        (set node 1 (null Node))
+        node
+    )
+)
+
+; adding an element at the beginning,
+(def add_element_at_beginning (list : Node element : Num) : Node
+    (let ((new_node (make_node_with_val element)))
+        (set new_node 1 list)
+        new_node
+    )
+)
+
+; adding an element at the end,
+(def add_element_at_end (list_start : Node element : Num) : Node
+    (let ((new_node (make_node_with_val element)) (pointer list_start))
+        (while (if (isNull (index pointer 1)) false true)
+            (set pointer (index pointer 1)))
+        (set pointer 1 new_node)
+    )
+    list_start
+)
+
+; getting an element at an index,
+(def get_e_at_i (list : Node i : Num) : Num
+    (let ((pointer list) (count 0))
+        (while (< count i)
+            (set count (add1 count))
+            (set pointer (index pointer 1))
+        )
+        (index pointer 0)
+    )
+)
+
+; and creating a linked list of numbers that starts at 0 and goes up to the index of an input n.
+(def range (n : Num) : Node
+    (let ((count 0) (list (make_node_with_val 0)))
+        (let ((pointer list))
+            (while (< count n)
+                (set count (add1 count))
+                (set pointer 1 (make_node_with_val count))
+                (set pointer (index pointer 1))
+            )
+        )
+        list
+    )
+)
+
+(get_e_at_i 
+    (add_element_at_beginning 
+        (add_element_at_end 
+            (range 5)
+        2)
+    3)
+input)
