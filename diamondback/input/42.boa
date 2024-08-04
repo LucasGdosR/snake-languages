@@ -1,0 +1,2 @@
+(def test (x : Num y : Num) (print x) y)
+(test 1 2)

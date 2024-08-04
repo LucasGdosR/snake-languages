@@ -1,0 +1,20 @@
+(def shallow_stack (lone_arg : Num) : Num lone_arg)
+(def regular_stack (arg1 : Num arg2 : Num) : Num arg1)
+(def deep_stack (arg1 : Num arg2 : Num arg3 : Num) : Num arg2)
+
+(deep_stack 
+    (deep_stack 
+        (deep_stack
+            (regular_stack
+                (shallow_stack input)
+                 input
+            )
+            input
+            input
+        )
+        input
+        input
+    )
+    input
+    input
+)

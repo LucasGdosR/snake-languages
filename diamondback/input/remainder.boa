@@ -1,0 +1,26 @@
+(def remainder (dividend : Num divisor : Num) : Num
+    (if (== divisor 0)
+        -1
+        (let ((dividend_is_positive (> dividend 0)) (divisor_is_positive (> divisor 0)))
+            (if divisor_is_positive
+                0
+                (set divisor (* divisor -1)))
+            (if dividend_is_positive
+                0
+                (set dividend (* dividend -1)))
+            (while (> dividend divisor)
+                (set dividend (- dividend divisor)))
+            (if (== dividend divisor) 0 dividend)
+        )
+    )
+)
+(let ((ignore 0)) 
+    (print(remainder 13 4))
+    (print(remainder 13 -4))
+    (print(remainder -13 -4))
+    (print(remainder -13 4))
+    (print(remainder 14 4))
+    (print(remainder 15 4))
+    (print(remainder 16 4))
+    (print(remainder 16 0))
+)
