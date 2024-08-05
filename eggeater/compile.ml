@@ -180,10 +180,12 @@ let rec compile_expr (e : expr) (si : int) (env : (string * int) list) def_env
       | [] -> []
       | arg :: rest -> (compile_expr arg si env) @ [IMov(stackloc si, Reg(RAX))] @ store_args_in_stack rest (si + 1)
     in 
-    let rsp_offset = si + List.length args - 1 in
-    let args_instructions = store_args_in_stack args si in
-    let rsp_adjust = [ISub(Reg(RSP), Const(8 * (rsp_offset)))] in
-    let restore_rsp = [IAdd(Reg(RSP), Const(8 * (rsp_offset)))] in
+    let num_args = List.length args in
+    let rsp_offset = si + num_args - 1 in
+    let align_adjust = if (rsp_offset + 1) mod 2 = 0 then 0 else 1 in
+    let args_instructions = store_args_in_stack args (si + align_adjust) in
+    let rsp_adjust = [ISub(Reg(RSP), Const(8 * (rsp_offset + align_adjust)))] in
+    let restore_rsp = [IAdd(Reg(RSP), Const(8 * (rsp_offset + align_adjust)))] in
     args_instructions @ rsp_adjust
     @ [ICall(f ^ "_func")] @ restore_rsp
 
@@ -200,7 +202,9 @@ and compile_prim1 op e si env def_env =
       (* If it's a bool, add 4, turning false -> true *)
       IJne(not_bool); IAdd(Reg(RBX), Const(4));
       ILabel(not_bool); IMov(Reg(RAX), Reg(RBX))]
-    | Print -> compiled_e @ [IMov(Reg(RDI), Reg(RAX)); ISub(Reg(RSP), Const(8 * (si + 1))); ICall("print"); IAdd(Reg(RSP), Const(8 * (si + 1)))]
+    | Print -> 
+      let stack_adjust = Const(if (si + 1) mod 2 = 0 then 8 * (si + 1) else 8 * (si + 2)) in
+      compiled_e @ [IMov(Reg(RDI), Reg(RAX)); ISub(Reg(RSP), stack_adjust); ICall("print"); IAdd(Reg(RSP), stack_adjust)]
     | IsNull -> let not_null = gen_temp "false" in
       compiled_e @ [IMov(Reg(RBX), false_const); ICmp(Reg(RAX), null_const);
       IJne(not_null); IAdd(Reg(RBX), Const(4));
