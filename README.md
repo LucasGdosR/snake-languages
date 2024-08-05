@@ -19,6 +19,8 @@ Diamondback implements function declarations and the `print` operation. This lea
 #### PA5: Eggeater
 This was a more open-ended project. Eggeater allowed me to make a 1 dollar mistake: introducing `null` to the language. I also included type aliasing, like `typedef`. The most significant and powerful change was the addition of heap allocated memory. Eggeater allows the creation, access, and modification of arrays. This powerful feature is demonstrated by the available executable files, which include data-structures that hold points, a linked list implementation, and binary search trees.
 
+Also, Diamondback had an issue with stack alignment depending on the number of arguments on a function or the number of variables declared in a let-expression. Eggeater fully fixes this bug, maintaining stack alignment no matter what.
+
 #### TODO: PA6: Heapingcobra and Optimalsnake
 PA6 gives two options: implement more heap features (cycle detection in data-structures and printing them accordingly without infinite loops, and structural equality), or implementing optimizations. I'm doing both.
 
