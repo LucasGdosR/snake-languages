@@ -10,7 +10,7 @@ This compiler implements some arithmetic integer operations and variable declara
 #### PA2: Boa
 This version has both integer and boolean types, which have an internal representation that differs on the least significant bit. It has runtime errors, conditionals, command-line inputs, and some more operations that yield booleans (<, >, ==, isBool, isNum).
 
-#### PA3: Copperhead
+### PA3: Copperhead
 Copperhead implements static type checking, loops, and variable assignment. Up to now, variable could be declared, but they were immutable.
 
 ***Highlight:*** I implemented two optional, advanced features related to type checking, which are only a part of Copperhead:
@@ -25,12 +25,12 @@ Copperhead implements static type checking, loops, and variable assignment. Up t
   (+ input 10))
 ```
 
-#### PA4: Diamondback
+### PA4: Diamondback
 Diamondback implements function declarations and the `print` operation. This leads to interesting engineering choices, such as defining a calling convention. You can read about the calling convention I adopted inside Diamondback's `readme`.
 
 ***Highlight***: I implemented the optional challenge of not requiring type anotations on function declaration returns, instead calculating them based on the known input types.
 
-#### PA5: Eggeater
+### PA5: Eggeater
 This was a more open-ended project. Eggeater allowed me to make a 1 dollar mistake: introducing `null` to the language. I also included type aliasing, like `typedef`. The most significant and powerful change was the addition of heap allocated memory. Eggeater allows the creation, access, and modification of arrays. This powerful feature is demonstrated by the available executable files, which include data-structures that hold points, a linked list implementation, and binary search trees. Eggeater has the optional challenge of dealing with structural equality (different arrays with identical content), which I'm tackling on as part of PA6.
 
 Also, Diamondback had an issue with stack alignment depending on the number of arguments on a function or the number of variables declared in a let-expression. Eggeater fully fixes this bug, maintaining stack alignment no matter what.
