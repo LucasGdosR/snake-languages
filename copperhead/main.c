@@ -36,10 +36,6 @@ void error(int64_t error_code) {
 int64_t parse_input(char *input) {
   char *endptr;
   int64_t parsed_input = strtol(input, &endptr, 10);
-  if (*endptr != '\0') {
-    fprintf(stderr, "Error: input must be a number: %s\n", input);
-    exit(1);
-  }
   if (parsed_input > BOA_MAX || parsed_input < BOA_MIN) {
     fprintf(stderr, "Error: input is not a representable number: %s\n", input);
     exit(1);
@@ -54,7 +50,12 @@ int main(int argc, char** argv) {
     exit(1);
   }
 
-  int64_t input_val = parse_input(argv[1]);
+  int64_t input_val =
+          strcmp("false", argv[1]) == 0
+          ? FALSE
+          : strcmp("true", argv[1]) == 0
+          ? TRUE
+          : parse_input(argv[1]);
   
   int64_t result = our_code_starts_here(input_val);
   print(result);

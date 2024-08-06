@@ -18,6 +18,7 @@ let false_const = HexConst(0x0000000000000000L)
 type typ =
   | TNumber
   | TBoolean
+  | TNumOrBool
 
 let rec tc_e (e : expr) (env : (string * typ) list) : typ =
   match e with
@@ -27,25 +28,39 @@ let rec tc_e (e : expr) (env : (string * typ) list) : typ =
       | Some(typ) -> typ
       | None -> failwith "Unbound id" (* Never reached *)
     end
+  | EIf(EPrim1(IsBool, EId(x)), cons, alt) -> 
+      let cons_typ = tc_e cons ((x, TBoolean) :: env) in
+      let alt_typ = tc_e alt ((x, TNumber) :: env) in
+      if cons_typ = alt_typ
+        then cons_typ
+      else failwith "Type mismatch"
+  | EIf(EPrim1(IsNum , EId(x)), cons, alt) -> 
+      let cons_typ = tc_e cons ((x, TNumber) :: env) in
+      let alt_typ = tc_e alt ((x, TBoolean) :: env) in
+      if cons_typ = alt_typ
+        then cons_typ
+      else failwith "Type mismatch"
   | EIf(cond, cons, alt) -> begin match (tc_e cond env, tc_e cons env, tc_e alt env) with
       | TBoolean, cons_typ, alt_typ when cons_typ = alt_typ -> cons_typ
       | _ -> failwith "Type mismatch"
     end
-  | ESet(var, value) -> begin match find env var with
-      | Some(typ) when typ = tc_e value env -> typ
+  | ESet(var, value) ->
+    let set_typ = tc_e value env in
+    begin match find env var with
+      | Some(typ) when typ = set_typ -> typ
       | Some(_) -> failwith "Type mismatch"
       | None -> failwith "Unbound id" (* Never reached *)
     end
   | EPrim1(op, e) -> begin match op with
       | Add1 | Sub1 -> begin match tc_e e env with
           | TNumber -> TNumber
-          | TBoolean -> failwith "Type mismatch"
+          | _ -> failwith "Type mismatch"
         end
       | IsNum | IsBool -> TBoolean
     end
   | EPrim2(op, e1, e2) -> begin match op, tc_e e1 env, tc_e e2 env with
       | Equal, _, _ -> TBoolean
-      | _, TBoolean, _ | _, _, TBoolean -> failwith "Type mismatch"
+      | _, (TBoolean | TNumOrBool), _ | _, _, (TBoolean | TNumOrBool) -> failwith "Type mismatch"
       | Plus, _, _ | Minus, _, _ | Times, _, _ -> TNumber
       | Greater, _, _ | Less, _, _ -> TBoolean
     end
@@ -60,7 +75,8 @@ let rec tc_e (e : expr) (env : (string * typ) list) : typ =
   
     let rec tc_bindings (binding : (string * expr) list) (body : expr list) (env : (string * typ) list) = begin match binding with
         | [] -> tc_body body env
-        | (x, value)::rest -> tc_bindings rest body ((x, tc_e value env)::env)
+        | (x, value)::rest -> let x_typ = tc_e value env in
+          tc_bindings rest body ((x, x_typ)::env)
       end in
     tc_bindings bindings body env
   | EWhile(cond, body) ->
@@ -73,7 +89,7 @@ let rec tc_e (e : expr) (env : (string * typ) list) : typ =
   
     match tc_e cond env with
       | TBoolean -> tc_body body env
-      | TNumber -> failwith "Type mismatch"
+      | _ -> failwith "Type mismatch"
 
 let rec well_formed_e (e : expr) (env : (string * int) list) : string list =
   match e with
@@ -166,8 +182,16 @@ let rec compile_expr (e : expr) (si : int) (tc_env : (string * typ) list) (env :
 and compile_prim1 op e si tc_env env =
   let compiled_e = compile_expr e si tc_env env in
   match op with
-  | IsNum -> [IMov(Reg(RAX), if tc_e e tc_env = TNumber then true_const else false_const)]
-  | IsBool -> [IMov(Reg(RAX), if tc_e e tc_env = TBoolean then true_const else false_const)]
+  | IsNum -> let cond_typ = tc_e e tc_env in
+    if cond_typ = TNumOrBool
+      then compiled_e @ [IAnd(Reg(RAX), Const(1)); IShl(Reg(RAX), Const(1))]
+    else
+    [IMov(Reg(RAX), if tc_e e tc_env = TNumber then true_const else false_const)]
+  | IsBool -> let cond_typ = tc_e e tc_env in
+    if cond_typ = TNumOrBool
+      then compiled_e @ [IXor(Reg(RAX), Const(1)); IAnd(Reg(RAX), Const(1)); IShl(Reg(RAX), Const(1))]
+    else
+    [IMov(Reg(RAX), if tc_e e tc_env = TBoolean then true_const else false_const)]
   | Add1 -> compiled_e @ [IAdd(Reg(RAX), Const(2)); IJo(overflow_err)]
   | Sub1 -> compiled_e @ [ISub(Reg(RAX), Const(2)); IJo(overflow_err)]
 
@@ -207,7 +231,7 @@ and compile_body body si tc_env env =
 
 let compile_to_string prog =
   let _ = check prog in
-  let tc_env = [("input", TNumber)] in
+  let _ = tc_e prog [("input", TNumOrBool)] in
   let prelude = "  section .text\n" ^
                 "  extern error\n" ^
                 "  global our_code_starts_here\n" ^
@@ -215,6 +239,6 @@ let compile_to_string prog =
                 "  mov [rsp - 8], rdi\n" in
   let postlude = [IRet]
     @ [ILabel(overflow_err); IMov(Reg(RDI), Const(1)); IPush(Const(0)); ICall("error")] in
-  let compiled = (compile_expr prog 2 tc_env [("input", 1)]) in
+  let compiled = (compile_expr prog 2 [("input", TNumOrBool)] [("input", 1)]) in
   let as_assembly_string = (to_asm (compiled @ postlude)) in
   sprintf "%s%s\n" prelude as_assembly_string
