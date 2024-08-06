@@ -14,6 +14,7 @@ In your design document, you should make sure to cover (in whatever order makes 
 
 (a) What does the caller do before and after the call?
 > In compile.ml, in the compile_expr function, there's a case for a function call, which is EApp. First, the caller stores all arguments to the function in the stack. The first argument is stored at the bottom of the stack, and the last is at the top. When all the arguments are on the stack, RSP is modified (sub) to point to the last argument, the top of the stack. The function is called, which pushes the return address on top of the last argument. When the function returns and the return address is popped, RSP is adjusted (add) to just below the arguments, effectively freeing the stack.
+> > EDIT: while building Eggeater, I realized what was wrong with this calling convention. Depending on the number of arguments and the number of variables already on the stack (through let-expressions), it is necessary to store a padding at the bottom of the stack before the actual arguments. This maintains 16-byte alignment, and allows C functions (such as print) to be called. Eggeater has this convention. Diamondback programs that use print may produce errors.
 
 (b) What is the callee responsible for?
 > All the callee has to do is access its arguments correctly from the stack. It should be aware of its environment, which is done at compile time.
