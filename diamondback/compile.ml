@@ -135,13 +135,15 @@ let rec compile_expr (e : expr) (si : int) (env : (string * int) list) def_env
       | [] -> []
       | arg :: rest -> (compile_expr arg si env def_env) @ [IMov(stackloc si, Reg(RAX))] @ store_args_in_stack rest (si + 1)
     in 
-    let rsp_offset = si + List.length args - 1 in
-    let args_instructions = store_args_in_stack args si in
-    let rsp_adjust = [ISub(Reg(RSP), Const(8 * (rsp_offset)))] in
-    let restore_rsp = [IAdd(Reg(RSP), Const(8 * (rsp_offset)))] in
+    let num_args = List.length args in
+    let rsp_offset = si + num_args - 1 in
+    let align_adjust = if (rsp_offset + 1) mod 2 = 0 then 0 else 1 in
+    let args_instructions = store_args_in_stack args (si + align_adjust) in
+    let rsp_adjust = [ISub(Reg(RSP), Const(8 * (rsp_offset + align_adjust)))] in
+    let restore_rsp = [IAdd(Reg(RSP), Const(8 * (rsp_offset + align_adjust)))] in
     args_instructions @ rsp_adjust
     @ [ICall(f ^ "_func")] @ restore_rsp
-
+    
 and compile_prim1 op e si env def_env =
   let compiled_e = compile_expr e si env def_env in
   match op with
@@ -149,7 +151,10 @@ and compile_prim1 op e si env def_env =
     | Sub1 -> compiled_e @ [ISub(Reg(RAX), Const(2)); IJo(overflow_err)]
     | IsNum -> compiled_e @ [IAnd(Reg(RAX), Const(1)); IShl(Reg(RAX), Const(1))]
     | IsBool -> compiled_e @ [IXor(Reg(RAX), Const(1)); IAnd(Reg(RAX), Const(1)); IShl(Reg(RAX), Const(1))]
-    | Print -> compiled_e @ [IMov(Reg(RDI), Reg(RAX)); ISub(Reg(RSP), Const(8 * (si + 1))); ICall("print"); IAdd(Reg(RSP), Const(8 * (si + 1)))]
+    | Print -> 
+      let stack_adjust = Const(if (si + 1) mod 2 = 0 then 8 * (si + 1) else 8 * (si + 2)) in
+      compiled_e @ [IMov(Reg(RDI), Reg(RAX)); ISub(Reg(RSP), stack_adjust); ICall("print"); IAdd(Reg(RSP), stack_adjust)]
+    
 
 and compile_prim2 op e1 e2 si env def_env =
   let e1is = compile_expr e1 si env def_env in
