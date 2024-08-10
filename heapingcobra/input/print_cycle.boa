@@ -1,0 +1,10 @@
+(let ((a (array 2)) (b (array 2)))
+    ; This is fine
+    (set a 1 b) (print a)   ; a: [ null b: [ null null] ]
+    ; So is this
+    (set a 0 1) (print a)   ; a: [  1   b: [ null null] ]
+    ; The beginning of the repetition is shown, but it stops
+    (set b 0 a) (print b)   ; b: [ a: [ 1  b: [ cycle null ] ] null ]
+    ; Only the cyclic repetition stops, the rest of the array is shown
+    (set b 1 2) b           ; b: [ a: [ 1  b: [ cycle   2  ] ]   2  ]
+)

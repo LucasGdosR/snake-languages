@@ -1,0 +1,39 @@
+; Uncomment lines by removing the semicolon
+(let ((a (array 2)) (b (array 2)) (c (array 1)) (d (array 1)))
+    ; Num and bool examples
+    ;(print (~= 1 1))           ; true: equal nums
+    ;(print (~= true true))     ; true: equal bools
+    ;(print (~= false false))   ; "
+    ;(print (~= 1 2))           ; false: diff nums
+    ;(print (~= true false))    ; false: diff bool
+    ;(print (~= true 1))        ; false: diff types
+
+    ; Mutating array examples
+    ;(print (~= a b))           ; true: len 2 arrays filled with null
+    ;(set a 0 1)                ;
+    ;(print (~= a b))           ; false: same len, diff contents
+    ;(set b 0 1)                ;
+    ;(print (~= a b))           ; true: same contents
+    ;(set b 0 2)                ;
+    ;(print (~= a b))           ; false: no longer same contents
+
+    ; Arrays filled with arrays which are structurally equal
+    ;(set a 0 c)                ;
+    ;(set b 0 d)                ;
+    ;(print (~= a b))           ; true: arrays with arrays
+    ;(set c 0 1)                ;
+    ;(print (~= a b))           ; false: a has c, b has d, c != d
+
+    ; Arrays that converge
+    ;(set a 1 c)                ;
+    ;(set b 1 c)                ;
+    ;(print (~= a b))           ; true: both visit c, but that's okay
+
+    ; Different lengths, same contents
+    ;(print (~= a c))           ; false:
+
+    ; Cyclic structure
+    ;(set a 1 b)                ;
+    ;(set b 1 a)                ;
+    ;(~= a b)                   ; Error: tried ~= on cyclic structure
+)
