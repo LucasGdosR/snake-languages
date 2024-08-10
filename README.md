@@ -28,13 +28,16 @@ Copperhead implements static type checking, loops, and variable assignment. Up t
 ### PA4: Diamondback
 Diamondback implements function declarations and the `print` operation. This leads to interesting engineering choices, such as defining a calling convention. You can read about the calling convention I adopted inside Diamondback's `readme`.
 
-***Highlight***: I implemented the optional challenge of not requiring type anotations on function declaration returns, instead calculating them based on the known input types.
+***Highlight***: I implemented the optional challenge of not requiring type anotations on function declaration returns, instead calculating them based on the known input types. I also started the optional challenge of tail call optimizations, propagating a tail call boolean to identify tail calls. I found it tricky to update stack variables when one is needed to update the other, and eventually moved on without finishing this optimization.
 
 ### PA5: Eggeater
 This was a more open-ended project. Eggeater allowed me to make a 1 dollar mistake: introducing `null` to the language. I also included type aliasing, like `typedef`. The most significant and powerful change was the addition of heap allocated memory. Eggeater allows the creation, access, and modification of arrays. This powerful feature is demonstrated by the available executable files, which include data-structures that hold points, a linked list implementation, and binary search trees. Eggeater has the optional challenge of dealing with structural equality (different arrays with identical content) and cyclic data structures, which I'm tackling on as part of PA6.
 
-#### TODO: PA6: Heapingcobra and Optimalsnake
-PA6 gives two options: implement more heap features (cycle detection in data-structures and printing them accordingly without infinite loops, and structural equality), or implementing optimizations. I'm doing both.
+### PA6.H: Heapingcobra
+Heapingcobra is strictly an upgrade to Eggeater. It deals with structural equality (different arrays with the same content), including the case of cyclic data structures, which it detects and rejects. Unlike the rest of the compilers, which were mostly implemented in OCaml and were focused on compile time, these features were implemented C functions, which are called in runtime.
+
+#### TODO: PA6.O: Optimalsnake
+PA6 had the option of implementing either extra heap feature for PA5, or optimization for PA4. This will be the implementation of the optimizations.
 
 #### TODO: PA7: Garter Snake
 Implement data definitions and garbage collection!
