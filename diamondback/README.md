@@ -1,19 +1,16 @@
 # pa4
-Starter code for pa4
 
 Writeup here:
-https://ucsd-cse131-f19.github.io/pa4/
+https://github.com/ucsd-cse131-f19/ucsd-cse131-f19.github.io/blob/master/pa4/pa4.pdf
 
-## Describing Your Calling Convention
-As you implement Diamondback, you will need to make a number of decisions, not least of which is the calling convention you choose, and decisions you make around compiling application expressions and definitions. Along with your code, you will write a desgin document as a separate PDF describing how your calling convention works.
+> The following example programs are included in the `input` and `output` directories: deepstack, fibonacci, isprime, remainder.
+>
+> You can make new binary executables by creating a file in the input directory and typing `make output/<filename>.run` to the command-line while inside the diamondback directory. You can make assembly files with the `.s` file extension instead of `.run`. You can execute by typing `output/<filename>.run <input>`. Input must be an integer.
 
-There are no restrictions on the calling convention you choose. You could implement the x86-64 convention for your functions, the version we discussed in class generalized to arbitrary lists of values, or something of your own design. Different choices will require different implementation strategies, different stack management requirements, and produce code that is “interesting” to debug in various ways.
-
-In your design document, you should make sure to cover (in whatever order makes sense) the items below. This report will be worth 30% of your assignment grade.
 1. A description of your calling convention in general terms:
 
 (a) What does the caller do before and after the call?
-> In compile.ml, in the compile_expr function, there's a case for a function call, which is EApp. First, the caller checks if it needs to add padding to the stack to remain 16 byte aligned. Then, it stores all arguments to the function in the stack. The first argument is stored at the bottom of the stack, and the last is at the top. When all the arguments are on the stack, RSP is modified (sub) to point to the last argument, the top of the stack. The function is called, which pushes the return address on top of the last argument. When the function returns and the return address is popped, RSP is adjusted (add) to just below the arguments, effectively freeing the stack.
+> In compile.ml, in the compile_expr function, there's a case for a function call, which is EApp. First, the caller checks if it needs to add padding to the stack to remain 16 byte aligned. Then, it stores all arguments to the function in the stack. The first argument is stored at the bottom of the stack, and the last is at the top. When all the arguments are on the stack, RSP is modified (sub) to point to the last argument, the top of the stack. The function is called, which pushes the return address on top of the last argument. When the function returns and the return address is popped, RSP is adjusted (add) to just below the arguments, effectively freeing the stack. A similar approach is taken for `print`.
 
 (b) What is the callee responsible for?
 > All the callee has to do is access its arguments correctly from the stack. It should be aware of its environment, which is done at compile time.
@@ -37,7 +34,13 @@ and parse_def sexp =
       | None, _, _ -> failwith ("Invalid function name " ^ f)
       | _, _, [] -> failwith "Invalid: Empty body"
       | _, parsed_t, _ -> DFun(f, parse_arg args, parsed_t, parse_body body)
-    end  
+    end
+  | List(Atom("def") :: Atom(f) :: List(args) :: body) ->
+    begin match validate_id_opt f, body with
+      | None, _ -> failwith ("Invalid function name " ^ f)
+      | _, [] -> failwith "Invalid: Empty body"
+      | _, _ -> DFunNoRet(f, parse_arg args, parse_body body)
+    end
   | _ -> failwith "Invalid definition."
 
 (* The EApp case I mentioned in compile_expr: *)
@@ -47,20 +50,24 @@ and parse_def sexp =
       | [] -> []
       | arg :: rest -> (compile_expr arg si env def_env) @ [IMov(stackloc si, Reg(RAX))] @ store_args_in_stack rest (si + 1)
     in 
-    let rsp_offset = si + List.length args - 1 in
-    let args_instructions = store_args_in_stack args si in
-    let rsp_adjust = [ISub(Reg(RSP), Const(8 * (rsp_offset)))] in
-    let restore_rsp = [IAdd(Reg(RSP), Const(8 * (rsp_offset)))] in
+    let num_args = List.length args in
+    let rsp_offset = si + num_args - 1 in
+    let align_adjust = if (rsp_offset + 1) mod 2 = 0 then 0 else 1 in
+    let args_instructions = store_args_in_stack args (si + align_adjust) in
+    let rsp_adjust = [ISub(Reg(RSP), Const(8 * (rsp_offset + align_adjust)))] in
+    let restore_rsp = [IAdd(Reg(RSP), Const(8 * (rsp_offset + align_adjust)))] in
     args_instructions @ rsp_adjust
     @ [ICall(f ^ "_func")] @ restore_rsp
 
 (* Building the argument environment in for the definition during compile time: *)
-compile_def (DFun(name, args, _, body)) def_env =
+compile_def def def_env =
+  let name, args, body = match def with
+    | DFun(f_name, args, _, body) -> f_name, args, body
+    | DFunNoRet(f_name, args, body) -> f_name, args, body in
   let rec build_args_env args si = match args with
     | [] -> []
     | (arg, _) :: rest -> (arg, si) :: build_args_env rest (si + 1)
   in
-  
   let args_length = List.length args in
   let env = build_args_env args (-args_length) in
   let compiled_body = compile_body body 1 env def_env in
@@ -74,9 +81,3 @@ compile_def (DFun(name, args, _, body)) def_env =
 
 (b) Highlight the parts of the generated assembly that make the example interesting, distinct, and/or especially challenging to compile
 > Having a let expression inside a function initially messed with my stack. Using push or pop instructions for let expressions would mess with the function's environment, which holds an offset from the stack pointer to the arguments.
-
-Still write this even if you don’t have everything working! In that case, in part 2, pick at least one example that doesn’t work, and note both its expected output and its actual behavior with your compiler.
-
-Submit this part of the assignment as a PDF to pa4-written.
-
-Advice on writing: Whenever you write, be thoughtful about your expected audience, and most importantly choose at least one specific audience you are writing for.5 For this assignment, imagine that Diamondback is a custom language that your team maintains. You are writing this design document to help with the onboarding process for people joining your team. They are programmers who know generally how compilers work and how x86-64 works, but not how Diamondback has made its choices internally. They will be curious how things work, why decisions were made the way they were, and what upcoming work on the compiler might look like.
