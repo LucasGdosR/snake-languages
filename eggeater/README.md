@@ -1,13 +1,8 @@
 # pa5
-Starter code for pa5
-
 Writeup here:
 https://ucsd-cse131-f19.github.io/pa5/pa5-open.pdf
 
-## Handin and Report
-To pa5-written, submit a PDF containing the following:
-
-•(10%) The concrete grammar of your language, pointing out and describing the new concrete syntax beyond Diamondback. Graded on clarity and completeness (it’s clear what’s new, everything new is there) and if it’s accurately reflected by your parse implementation.
+The concrete grammar of your language, pointing out and describing the new concrete syntax beyond Diamondback. Graded on clarity and completeness (it’s clear what’s new, everything new is there) and if it’s accurately reflected by your parse implementation.
 
 > I added arrays and operations on them. "set" is overloaded, taking 2 arguments to set variables, and 3 arguments to set elements of arrays.
 >```
@@ -57,7 +52,7 @@ To pa5-written, submit a PDF containing the following:
 >...
 >```
 
-•(5%) The definition of your language’s AST, highlighting new expressions and definitions beyond Diamondback. Graded on clarity and completeness, and if the abstract syntax is an accurate representation of the concrete syntax.
+The definition of your language’s AST, highlighting new expressions and definitions beyond Diamondback. Graded on clarity and completeness, and if the abstract syntax is an accurate representation of the concrete syntax.
 
 ```
 type prim1 =
@@ -81,29 +76,30 @@ type def =
   | DType of string * typ
 ```
 
-•(10%) A diagram of how heap-allocated values are arranged on the heap, including any extra words like the size of an allocated value or other metadata. Graded on clarity and completeness, and if it matches the implementation of heap allocation in the compiler.
+A diagram of how heap-allocated values are arranged on the heap, including any extra words like the size of an allocated value or other metadata. Graded on clarity and completeness, and if it matches the implementation of heap allocation in the compiler.
 
 > The first 8 bytes hold the size in binary, with no tag bits. Each 8 bytes thereafter hold the value of one element of the array.
 ```
 | n | val 0 | ... | val n - 1 |
 ```
 
-•(55%) The required tests above (in addition to appearing in the code you submit, they should be in the PDF). These will be partially graded on your explanation and provided code, and partially on if your compiler implements them according to your expectations.
+The required tests:
+> The programs error1-3 showcase error reporting around heap operations. There are more interesting files regarding geometric points and vector addition, binary search trees, and linked lists.
 
-- For each of the files error1-3, show the error message and explain in which phase your compiler and/or runtime catches the error. (5% each)
+- For each of the files error1-3, show the error message and explain in which phase your compiler and/or runtime catches the error.
 
-- For the others, include the actual output of the generated binary (in terms of stdout/stderr), the output you’d like them to have (if there’s any difference) and any notes on interesting features of that output. (10% each)
+- For the others, include the actual output of the generated binary (in terms of stdout/stderr), the output you’d like them to have (if there’s any difference) and any notes on interesting features of that output.
 > I'm not cluttering this with the test files. They're all in the input directory, and the outputs are all as expected.
 
-•(5%) A description of the thing you think is most interesting or exciting about your design and implementation in 2-3 sentences.
-> Arrays can hold elements of any type, so indexing into an array does not have a known type at compile time. Some type errors are caught at compile time, but as soon as indexing into arrays joins the picture, a joker "TUnknown" starts propagating and type errors must be caught at runtime.
+A description of the thing you think is most interesting or exciting about your design and implementation in 2-3 sentences.
+> Arrays can hold elements of any type, so indexing into an array does not have a known type at compile time. Some type errors are caught at compile time, but as soon as indexing into arrays enters the picture, a joker "TUnknown" starts propagating and type errors must be caught at runtime.
 
-•(5%) A description of a feature you’d like to add to your language next, with an outline of how you’d add it in 2-3 sentences.
+A description of a feature you’d like to add to your language next, with an outline of how you’d add it in 2-3 sentences.
 > I'd like to add structs that can be stored directly on the stack. I would add type declarations that can take multiple types, and make let expressions lookup in an environment the required size of the type that's being instantiated.
 
-•(5%) Pick two other programming languages you know that support heap-allocated data, and describe why your language’s design is more like one than the other.
+Pick two other programming languages you know that support heap-allocated data, and describe why your language’s design is more like one than the other.
 > My language supports different types in a single array, making it more like Python than Java. At the same time, using negative indexes results in an OOB exception, which makes it more like Java than Python. Both have arrays/lists stored contiguously in memory, with no pointers like linked lists, as does my implementation. I don't know how they deal with metadata, but all I store is the array's length.
 
-•(5%) A list of the resources you used to complete the assignment, including message board posts, online resources (including resources outside the course readings like Stack Overflow or blog posts with design ideas), and students or course staff discussions you had in-person. Please do collaborate and give credit to your collaborators.
+A list of the resources you used to complete the assignment, including message board posts, online resources (including resources outside the course readings like Stack Overflow or blog posts with design ideas), and students or course staff discussions you had in-person. Please do collaborate and give credit to your collaborators.
 
 > I did this one on my own. I didn't even use AI assistants for this iteration.
