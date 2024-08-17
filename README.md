@@ -8,10 +8,10 @@ This is the simplest compiler. It takes a number and makes a binary file that pu
 This compiler implements some arithmetic integer operations and variable declarations.
 
 #### PA2: Boa
-This version has both integer and boolean types, which have an internal representation that differs on the least significant bit. It has runtime errors, conditionals, command-line inputs, and some more operations that yield booleans (<, >, ==, isBool, isNum).
+This version has both integer and boolean types, which have an internal representation that differs on the least significant bit. It has runtime errors for wrong types and overflow, conditionals, command-line inputs, and some more operations that yield booleans (<, >, ==, isBool, isNum).
 
 ### PA3: Copperhead
-Copperhead implements static type checking, loops, and variable assignment. Up to now, variable could be declared, but they were immutable.
+Copperhead implements static type checking, loops, and variable assignment. Up to now, variables could be declared, but they were immutable.
 
 ***Highlight:*** I implemented two optional, advanced features related to type checking, which are only a part of Copperhead:
 - For isNum and isBool operations, there's no runtime computation. Since the types are known at compile time, those operations are compiled to moving either true or false to RAX;
