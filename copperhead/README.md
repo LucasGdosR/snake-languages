@@ -1,5 +1,3 @@
 # pa3
-Starter code for pa3
-
 Writeup here:
-https://ucsd-cse131-f19.github.io/pa3/
+https://github.com/ucsd-cse131-f19/ucsd-cse131-f19.github.io/blob/master/pa3/pa3.pdf
