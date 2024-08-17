@@ -1,0 +1,16 @@
+; This program shows that declarations that take in variables propagate constants
+; It showcases how shadowing works, and how it's more efficient than mutating variables
+; It even shows that the shadowed variable is remembered after the shadowing variables goes out of scope
+(let ((x 5))
+    (print x)
+    (let ((y x))
+        (print y)
+        (let ((x 4) (y x) (z 3))
+            (print x)
+            (print z)
+            (set z 2)
+            (print z)
+        )
+    )
+    (print x)
+)

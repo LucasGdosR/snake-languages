@@ -1,0 +1,6 @@
+; The program stores 3 on the stack and returns it in rax
+(let ((x (+ 1 2)))  ; EPlus is reduced to ENumber w/ constant folding, then x becomes a constant
+    (if (> x 0)     ; x is propagated, and (> x 0) is folded into true
+        x
+        0)          ; the false branch is eliminated
+)

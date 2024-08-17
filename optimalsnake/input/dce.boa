@@ -1,0 +1,15 @@
+(let ((x true) (seven 7) (y 3))
+    (while (> seven y) 
+        (if x
+            (set y (add1 y))
+            (print -1)
+        )
+        (if x
+            (print y)
+            (print seven)
+        )
+    )
+    (while false 1)
+    (print y)
+    seven
+)

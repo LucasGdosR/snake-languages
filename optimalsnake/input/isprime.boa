@@ -1,0 +1,13 @@
+(def remainder (dividend : Num divisor : Num) : Num
+    (while (> dividend divisor)
+        (set dividend (- dividend divisor)))
+    (if (== dividend divisor) 0 dividend))
+(def is_prime (x : Num) : Bool
+    (let ((divisor 2))
+        (while (> x divisor)
+            (if (== 0 (remainder x divisor))
+                (set divisor (add1 x))
+                (set divisor (add1 divisor)))) 
+        (if (== x divisor) true false))
+    )
+(is_prime input)
