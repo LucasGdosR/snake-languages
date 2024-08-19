@@ -1,7 +1,7 @@
 # PA6: Optimizations
 Optimalsnake implements constant propagation, constant folding, and dead code elimination. Since these particular optimizations never undo each other, it is safe to implement them using a fixed-point algorithm, and it will always terminate. This was my approach.
 
-Unlike the rest of the course, there's no material for optimizations, so I was on my own. First, I had to decid where to apply the optimizations. My working version of Diamondback already had well formedness and type checking right after the parser. I could either apply optimizations to the IR in the AST form I had at that point, or in the linear instruction list form after the "compile" function. I decided to do it with the AST, right after the program was checked. I included a call to the optimizing function here:
+Unlike the rest of the course, there's no material for optimizations, so I was on my own. First, I had to decide where to apply the optimizations. My working version of Diamondback already had well formedness and type checking right after the parser. I could either apply optimizations to the IR in the AST form I had at that point, or in the linear instruction list form after the "compile" function. I decided to do it with the AST, right after the program was checked. I included a call to the optimizing function here:
 ```
 let compile_to_string ((defs, _) as prog : Expr.prog) =
   let _ = check prog in
@@ -95,7 +95,7 @@ let rec fold_consts (e: expr) : expr * bool =
   ...
 ```
 
-Constant propagation is about finding variables which have a known value at a time, and replacing them for that value. That means variable names are important, as are "let declarations", and "set expressions". There are other tricky details, such as when different "set"s appear on conditional branches, and not propagating to a "while"'s condition something that is set in its body. I believe a different IR with SAS would be a nice fit for this case, and it might even allow to propagate constants after "set expressions":
+Constant propagation is about finding variables which have a known value at a time, and replacing them for that value. That means variable names are important, as are "let declarations", and "set expressions". There are other tricky details, such as when different "set"s appear on conditional branches, and not propagating to a "while"'s condition something that is set in its body. I believe a different IR with static single-assignment (SSA) would be a nice fit for this case, and it might even allow to propagate constants after "set expressions":
 ```
 let rec propagate_consts (e: expr) (st: (string * value) list) : expr * bool * (string * value) list =
   (* (let ((x 1) ...) ...) *)
