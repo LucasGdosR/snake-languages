@@ -51,7 +51,5 @@ Optimalsnake implements:
 
 A really cool feature is that variables can be shadowed by variables with the same name, and both are treated as constants. As long as the variable isn't set, all the work is done at compiletime.
 
-#### TODO: PA7: Garter Snake
-Unlike the rest of the compilers so far, Garter Snake was mostly implemented by the teacher. It already has a binary file with most of the implementation, including the addition of data definitions.
-
-The actual assignment is to extend it by implementing garbage collection in a separate C file. A minor part of the assignment is creating debugging functions that print the contents of the heap and the stack in a human readable format.
+### PA7: Garter Snake
+I implemented garbage collection using semispace swapping (allocating half of the memory, copying everything that's "live" to the other half), and a debugging function that prints the contents of the heap in a friendly human readable way.
