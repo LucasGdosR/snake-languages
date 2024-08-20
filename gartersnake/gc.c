@@ -73,11 +73,11 @@ Data* mark_heap(Data *p) {
      Data* md = p->gc_metadata;
      if (md) return md;
 
-     int64_t size = p->size;
-     NEXT_ADDR(size);
      md = (Data*)next;
      p->gc_metadata = md;
 
+     int64_t size = p->size;
+     NEXT_ADDR(size);
      md->size = size;
      md->name = p->name;
      int64_t *elements = p->elements;
