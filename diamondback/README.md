@@ -16,7 +16,7 @@ https://github.com/ucsd-cse131-f19/ucsd-cse131-f19.github.io/blob/master/pa4/pa4
 > All the callee has to do is access its arguments correctly from the stack. It should be aware of its environment, which is done at compile time.
 
 (c) Are there improvements you can imagine making in the future?
-> Using registers instead of relying solely on the stack. Using more push and pop instructions instead of adding and subbing RSP directly as often.
+> Using registers instead of relying solely on the stack. One major limitation that became apparent when implementing garbage collection for Gartersnake is that there's no link between the stack frames of different procedures. I would probably reimplement the calling convention to actually store the previous RSP in the callee stack frame. This enables garbage collection and better debuggers, for example.
 
 Use snippets of OCaml code from your compiler to illustrate key features.
 ```
